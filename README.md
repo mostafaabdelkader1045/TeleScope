@@ -1,0 +1,2 @@
+# TeleScope
+telecom ai platform
