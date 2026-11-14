@@ -1,6 +1,7 @@
 # Environment
 .env
 .env.*
+!.env.example
 
 # SeaweedFS credentials
 config/s3.json
@@ -13,9 +14,10 @@ data/
 
 # Python
 __pycache__/
-*.pyc
+*.py[cod]
 .venv/
 venv/
+.pytest_cache/
 
 # Logs
 logs/
@@ -28,3 +30,4 @@ logs/
 # OS
 .DS_Store
 Thumbs.db
+.vscode/
