@@ -1,0 +1,7 @@
+azure-storage-blob
+psycopg[binary]
+python-dotenv
+pyspark==4.0.5
+IPython
+pandas==2.2.2
+numpy==2.0.2

@@ -1,233 +1,486 @@
-# TeleScope AI Platform
+# TeleScope.ai 📡
 
-TeleScope is a data and AI platform for analyzing customer feedback and comparing Egyptian telecommunications providers. It brings together app reviews, survey responses, and publicly available offers to support evidence-based insights and recommendations.
+### Egyptian Telecom Reviews, Surveys & Offers Analytics Platform
 
-> **Project status:** In development. This repository structure and the documented architecture describe the intended design; individual components may not be implemented yet.
+TeleScope.ai is a data-driven analytics project designed to analyze customer reviews, survey responses, and telecom offers from Egyptian telecommunications providers.
 
-## Project Goals
+The project aims to transform raw data into structured, reliable, and analytical data that can help users understand customer satisfaction, compare telecom providers, evaluate services, and identify the most suitable providers and offers based on customer preferences.
 
-- Collect customer reviews and ratings from Google Play.
-- Bring together survey responses and telecom offers from supported sources.
-- Store raw data separately from processed and analytics-ready data.
-- Build repeatable data-processing and transformation workflows.
-- Analyze customer sentiment and recurring feedback themes.
-- Compare providers using clearly defined metrics.
-- Explore recommendation and ranking approaches.
-- Present insights through a Streamlit application.
+---
 
-## Data Sources
+## 📌 Project Overview
 
-The planned data sources are:
+The Egyptian telecommunications market includes several providers offering different internet and mobile services. Customers often rely on reviews, ratings, personal experiences, and offers when choosing a provider.
 
-- **Google Play:** app reviews, ratings, and available review metadata for the selected telecom applications.
-- **Surveys:** responses collected by the project team to compare providers and understand user preferences.
-- **Websites and APIs:** publicly available telecom offers and related information, subject to source availability and applicable terms.
+TeleScope.ai collects and processes data from multiple sources, integrates it into a centralized Data Warehouse, and prepares it for analytical insights and future machine learning applications.
 
-Collected data should be validated, documented, and handled according to the project's data-quality and privacy requirements.
+The project focuses on building a complete data pipeline, from data collection and storage to data integration, transformation, and analytical modeling.
 
-## Architecture Overview
+---
 
-The intended end-to-end flow is:
+## 🎯 Project Objectives
+
+- Collect customer reviews from telecom applications.
+- Gather customer survey responses and telecom offers.
+- Store raw data in centralized storage.
+- Build an integrated Data Warehouse.
+- Improve data quality through cleaning and transformation.
+- Analyze customer satisfaction across telecom providers.
+- Compare providers based on customer ratings and experiences.
+- Analyze telecom offers and customer preferences.
+- Prepare analytical datasets for future Machine Learning applications.
+
+---
+
+## 📊 Data Sources
+
+The project focuses on Egyptian telecommunications providers, including:
+
+- WE
+- Vodafone
+- Orange
+- Etisalat
+
+### 1. Application Reviews
+
+Customer reviews collected from telecom provider applications, including information such as:
+
+- Review content
+- Rating
+- Review date
+- App version
+- Provider
+
+### 2. Customer Surveys
+
+Survey data collected to understand customers' experiences, satisfaction levels, preferences, and opinions regarding telecom services.
+
+### 3. Telecom Offers
+
+Offers collected from telecom providers, containing information about available packages, prices, benefits, and target customers.
+
+---
+
+## 🏗️ System Architecture
+
+The implemented architecture follows a data engineering workflow:
 
 ```text
-Google Play       Surveys       Websites / APIs
-     \               |                /
-      +--------------+---------------+
-                     |
-                     v
-              Python Collection
-                     |
-                     v
-            S3-Compatible Object Storage
-                  Raw Data
-                     |
-                     v
-           Airflow Orchestration
-                     |
-                     v
-           PySpark Processing Jobs
-                     |
-                     v
-                PostgreSQL
-              Data Warehouse
-                     |
-                     v
-                dbt Models
-                     |
-          +----------+----------+
-          |                     |
-          v                     v
-    Analytics Tables       ML Workflows
-                           - Sentiment
-                           - Embeddings / NLP
-                           - Recommendation / Ranking
-          |                     |
-          +----------+----------+
-                     |
-                     v
-               Streamlit App
-       User Interface + Application Logic
+             Data Sources
+       ┌──────────┬──────────┬──────────┐
+       │ Reviews  │ Surveys  │  Offers  │
+       └────┬─────┴────┬─────┴────┬─────┘
+            │          │          │
+            ▼          ▼          ▼
+       Data Collection & Integration
+                  (Python)
+                     │
+                     ▼
+          Azure Blob Storage
+             (Raw Data)
+                     │
+                     ▼
+              Bronze Layer
+          (PostgreSQL Database)
+                     │
+                     ▼
+              Silver Layer
+       (Cleaned & Integrated Data)
+                     │
+                     ▼
+               Gold Layer
+         (Analytical Data Models)
+                     │
+                     ▼
+         Analytics & ML Applications
+              (Future Work)
 ```
 
-This diagram is a target design, not a claim that every component is already deployed. The actual workflow may evolve as implementation and testing progress.
+---
 
-### Technology Stack
+## 🔄 Data Pipeline
 
-| Area | Planned technology | Responsibility |
-|---|---|---|
-| Data collection | Python | Collect data from supported sources |
-| Object storage | SeaweedFS with an S3-compatible API, subject to current environment configuration | Store raw and intermediate files |
-| Orchestration | Apache Airflow | Schedule and monitor pipeline tasks |
-| Distributed processing | PySpark | Process larger datasets when distributed processing is useful |
-| Data transformations | dbt | Build tested SQL data models |
-| Data warehouse | PostgreSQL | Store structured analytical data |
-| Machine learning | Python NLP/ML components | Sentiment analysis, embeddings, recommendation, and ranking |
-| Application | Streamlit | Provide the interactive user interface and application workflows |
-| Optional BI | Power BI | Separate management dashboards, if required |
+The data pipeline consists of the following stages:
 
-The repository's implementation and configuration files are the source of truth for which services are currently active. Do not assume that a planned tool has already been configured.
+### 1. Data Collection
 
-## Repository Structure
+Data is collected from different sources using Python scripts.
+
+Collected datasets include customer reviews, survey responses, and telecom offers.
+
+### 2. Cloud Storage
+
+Raw collected files are stored in Azure Blob Storage to provide centralized storage and facilitate data loading.
+
+### 3. Bronze Layer
+
+The Bronze Layer stores the raw data in the Data Warehouse while preserving the original structure as much as possible.
+
+This layer serves as the initial stage of data ingestion.
+
+### 4. Silver Layer
+
+The Silver Layer contains cleaned, standardized, and integrated data.
+
+Data processing includes preparing data for analytical usage and improving consistency and quality.
+
+### 5. Gold Layer
+
+The Gold Layer provides analytical views organized using a Star Schema.
+
+It includes dimension and fact views designed to support analytical queries and reporting.
+
+---
+
+## 🏛️ Data Warehouse Architecture
+
+The Data Warehouse is implemented using PostgreSQL and follows a three-layer architecture.
+
+### Bronze Layer
+
+Responsible for storing raw ingested data.
+
+### Silver Layer
+
+Responsible for storing cleaned and transformed data.
+
+### Gold Layer
+
+Responsible for providing analytical data models through PostgreSQL Views.
+
+The Gold Layer follows a Star Schema design consisting of Dimension Views and Fact Views.
+
+### Dimension Views
+
+| Dimension | Description |
+|---|---|
+| `DimCompany` | Telecom providers |
+| `DimDate` | Date-related attributes |
+| `DimAppVersion` | Application versions |
+| `DimTenure` | Customer tenure categories |
+| `DimSpending` | Customer spending categories |
+| `DimRatingType` | Survey rating categories |
+| `DimPreferenceFactor` | Customer preference factors |
+| `DimOfferType` | Telecom offer categories |
+| `DimTargetCustomer` | Offer target customer categories |
+| `DimOffer` | Telecom offers |
+
+### Fact Views
+
+| Fact | Description |
+|---|---|
+| `FactReviews` | Customer application reviews |
+| `FactSurveyResponse` | Survey response records |
+| `FactSurveyRating` | Survey ratings |
+| `FactSurveyPreference` | Customer preferences |
+| `FactOffers` | Telecom offer analytical records |
+
+The Gold Layer currently consists of PostgreSQL Views built on top of the Silver Layer.
+
+---
+
+## 🛠️ Tech Stack
+
+| Technology | Purpose |
+|---|---|
+| Python | Data collection and data processing |
+| PostgreSQL 17 | Data Warehouse |
+| Azure Blob Storage | Cloud object storage |
+| SQL | Schema design, transformations, queries, and analytical modeling |
+| Docker | Containerization and environment management |
+| Docker Compose | Managing project services |
+| pgAdmin 4 | PostgreSQL administration and database management |
+| Git & GitHub | Version control and collaboration |
+
+### Planned Technologies
+
+The following technologies may be integrated into future development:
+
+- Apache Airflow – Workflow orchestration
+- Apache Spark – Distributed data processing
+- Machine Learning – Customer analytics and recommendations
+- Data Visualization – Analytical dashboards
+
+---
+
+## 📁 Project Structure
 
 ```text
 TeleScope.ai/
-├── app/                    # Streamlit pages, components, services, repositories
-├── config/                 # Application and environment configuration
-├── data_collection/        # Reviews, surveys, offers, shared collection utilities
-├── docs/                   # Architecture, storage, data, ML, and setup documentation
-├── ml/                     # Sentiment, embeddings, and recommendation modules
-├── pipelines/
-│   ├── airflow/            # Airflow DAGs
-│   └── spark/              # PySpark jobs
-├── powerbi/                # Power BI documentation and related project assets
-├── scripts/                # Developer and maintenance scripts
-├── storage/                # Storage notes and integration helpers
-├── tests/                  # Unit, integration, and data-quality tests
-├── transformations/        # dbt project and models
-├── warehouse/              # Warehouse schemas and SQL assets
-├── .env.example            # Names of required environment variables (no secrets)
+│
+├── Docker/
+│   └── docker-compose.yml
+│
+├── docs/
+│   ├── data_catalog.md
+│   └── images/
+│
+├── src/
+│   ├── data_collection/
+│   │   ├── offers/
+│   │   ├── reviews/
+│   │   │   ├── etisalat_reviews_scraping.py
+│   │   │   └── we_reviews_scraping.py
+│   │   └── surveys/
+│   │
+│   ├── data_loading/
+│   │   ├── bronze/
+│   │   │   ├── bronze_load.py
+│   │   │   ├── offers_loader.py
+│   │   │   ├── reviews_loader.py
+│   │   │   └── survey_loader.py
+│   │   │
+│   │   ├── silver/
+│   │   │   ├── silver_load.py
+│   │   │   ├── offers_loader.py
+│   │   │   ├── reviews_loader.py
+│   │   │   └── survey_loader.py
+│   │   │
+│   │   └── connections/
+│   │       ├── azure_connection.py
+│   │       └── database_connection.py
+│   │
+│   ├── data_transformation/
+│   │   └── survey_transformation.py
+│   │
+│   ├── data_warehouse/
+│   │   ├── bronze_layer/
+│   │   │   └── Bronze_Layer_Schema.sql
+│   │   │
+│   │   ├── silver_layer/
+│   │   │   └── Silver_layer_Schema.sql
+│   │   │
+│   │   └── gold_layer/
+│   │       ├── create_dimensions.sql
+│   │       ├── create_facts.sql
+│   │       └── check_*.sql
+│   │
+│   ├── pipelines/
+│   │   ├── airflow/
+│   │   │   └── dags/
+│   │   └── spark/
+│   │       └── jobs/
+│   │
+│   └── scripts/
+│
+├── .env.example
 ├── .gitignore
-├── requirements.txt         # Python dependencies, when established
+├── requirements.txt
 └── README.md
 ```
 
-Some directories may contain only a `.gitkeep` placeholder while their implementation is pending.
+---
 
-## Streamlit Application
-
-Streamlit is planned for both the user interface and the Python application layer; a separate React frontend and FastAPI backend are not required for the initial design.
-
-Planned application areas include:
-
-- **Company Comparison:** compare providers using documented metrics.
-- **Reviews Analytics:** explore ratings, review volume, and trends.
-- **Sentiment Analysis:** view sentiment results and feedback themes.
-- **Recommendations:** display recommendations or rankings produced by the ML layer.
-- **Survey Insights:** summarize survey responses.
-- **Offers Explorer:** browse and compare collected offers.
-
-Keep UI code separate from business logic. Streamlit pages should call application services, which in turn use repositories or ML modules. Avoid putting database queries, model training, and all business logic directly in page files.
-
-## Storage Principles
-
-- Keep raw collected data separate from processed and curated outputs.
-- Store large datasets and generated artifacts in the configured object storage, not in Git.
-- Keep credentials and secrets out of source control.
-- Document the active storage endpoint, access method, and team setup in `docs/storage/`.
-- Do not commit real `.env` files, access keys, passwords, or private endpoints.
-
-Refer to the storage documentation in [`docs/storage/`](docs/storage/) for environment-specific details.
-
-## Getting Started
+## ⚙️ Installation & Setup
 
 ### Prerequisites
 
-Install only the tools required for the component you intend to work on. Depending on the workflow, these may include:
+Make sure the following tools are installed:
 
+- Python 3.12
+- Docker Desktop
 - Git
-- Python and a virtual environment
-- Streamlit
-- Access to the configured PostgreSQL database
-- Access to the configured S3-compatible object storage
-- Airflow, PySpark, and dbt for the relevant data-pipeline tasks
 
-Exact versions and service setup should be documented as the environment is finalized.
-
-### Local setup
-
-1. Clone the repository:
-
-   ```bash
-   git clone https://github.com/mostafaabdelkader1045/TeleScope.git
-   cd TeleScope
-   ```
-
-2. Create and activate a virtual environment:
-
-   **Windows PowerShell**
-   ```powershell
-   python -m venv .venv
-   .\.venv\Scripts\Activate.ps1
-   ```
-
-   **Linux / macOS**
-   ```bash
-   python3 -m venv .venv
-   source .venv/bin/activate
-   ```
-
-3. Install dependencies if `requirements.txt` has been populated and reviewed:
-
-   ```bash
-   python -m pip install -r requirements.txt
-   ```
-
-4. Create a local `.env` file based on `.env.example` when the required variables have been defined. Fill it with your own authorized environment values; never commit it.
-
-5. Follow the storage, database, and pipeline setup guides in [`docs/`](docs/).
-
-### Running Streamlit
-
-Once the application entry point and its dependencies are implemented, run:
+### 1. Clone the Repository
 
 ```bash
-streamlit run app/Home.py
+git clone https://github.com/mostafaabdelkader1045/TeleScope.git
+
+cd TeleScope
 ```
 
-This command is the intended entry point. It will work once `app/Home.py`, the required dependencies, and the relevant configuration are in place.
+### 2. Create a Virtual Environment
 
-## Development Guidelines
+```bash
+python -m venv .venv
+```
 
-- Keep each module focused on one responsibility.
-- Put shared application logic in services or reusable modules, not directly in Streamlit pages.
-- Keep data collection, processing, dbt transformations, and ML workflows separate.
-- Add tests for transformations, business rules, and data-quality checks.
-- Document required environment variables without including their secret values.
-- Use clear, focused commits and descriptive pull requests.
-- Never commit raw customer datasets, credentials, local virtual environments, or generated files.
+Activate the environment.
 
-## Contributing
+**Windows:**
 
-1. Sync your local branch with the team's agreed branch.
-2. Create a feature branch for substantial changes when the team workflow calls for one.
-3. Keep changes focused on one task.
-4. Run relevant tests and checks.
-5. Update documentation when behavior, configuration, or architecture changes.
-6. Open a pull request and request review before merging when required by the team.
+```powershell
+.venv\Scripts\activate
+```
 
-See [`docs/team/`](docs/team/) for team-specific contribution and access instructions as they are added.
+**Linux/macOS:**
 
-## Security and Data Handling
+```bash
+source .venv/bin/activate
+```
 
-- Do not commit `.env`, credentials, tokens, or private keys.
-- Do not upload large datasets to GitHub; use the approved team storage.
-- Limit access to data and services to authorized team members.
-- Follow the applicable source terms and the team's data-handling requirements.
+### 3. Install Dependencies
 
-## Team
+```bash
+pip install -r requirements.txt
+```
 
-TeleScope is developed as a collaborative graduation project. Add the current team members and their responsibilities here once the team has agreed on the final ownership assignments.
+### 4. Configure Environment Variables
 
-## License
+Create your `.env` file from the example:
 
-A license has not yet been specified. Until the project team selects one, do not assume that the repository is open for unrestricted reuse.
+**Windows:**
+
+```powershell
+Copy-Item .env.example .env
+```
+
+**Linux/macOS:**
+
+```bash
+cp .env.example .env
+```
+
+Update the environment variables inside `.env` with your own credentials.
+
+---
+
+## 🐳 Running Docker Services
+
+The project uses Docker Compose to manage PostgreSQL and pgAdmin.
+
+Start the services:
+
+```bash
+docker compose --env-file .env -f Docker/docker-compose.yml up -d
+```
+
+Check service status:
+
+```bash
+docker compose --env-file .env -f Docker/docker-compose.yml ps
+```
+
+Stop the services:
+
+```bash
+docker compose --env-file .env -f Docker/docker-compose.yml stop
+```
+
+Start stopped services:
+
+```bash
+docker compose --env-file .env -f Docker/docker-compose.yml start
+```
+
+### Services
+
+| Service | Port | Description |
+|---|---:|---|
+| PostgreSQL | `5432` | Data Warehouse Database |
+| pgAdmin | `5050` | Database Management Interface |
+
+### Access pgAdmin
+
+Open your browser:
+
+```text
+http://localhost:5050
+```
+
+Login using the credentials configured in your `.env` file.
+
+---
+
+## 🗄️ Database Configuration
+
+The PostgreSQL database is configured using the following environment variables:
+
+```env
+POSTGRES_USER=telescope
+POSTGRES_PASSWORD=your_password
+POSTGRES_DB=telescope_dw
+```
+
+The pgAdmin configuration:
+
+```env
+PGADMIN_EMAIL=your_email
+PGADMIN_PASSWORD=your_password
+```
+
+---
+
+## 👥 Team Database Access
+
+Team members can connect to the shared PostgreSQL database remotely through the configured private network.
+
+Connection parameters:
+
+| Parameter | Value |
+|---|---|
+| Host | Team Host Tailscale IP |
+| Port | `5432` |
+| Database | `telescope_dw` |
+| Username | `telescope` |
+| Password | Provided securely by the project administrator |
+
+Team members should install and connect to the project's Tailscale network before attempting to connect to the database.
+
+No public database port forwarding is required.
+
+---
+
+## 📚 Documentation
+
+Project documentation is maintained inside the `docs/` directory.
+
+- **Data Catalog:** `docs/data_catalog.md`
+
+The Data Catalog documents the Data Warehouse tables, columns, and their descriptions.
+
+---
+
+## 🚧 Project Status
+
+### Implemented
+
+- Data collection scripts for selected telecom applications.
+- Azure Blob Storage integration.
+- PostgreSQL database infrastructure.
+- Docker-based PostgreSQL and pgAdmin deployment.
+- Bronze Layer schema and data loading.
+- Silver Layer schema and data loading.
+- Data transformation processes.
+- Gold Layer analytical Views.
+- Dimension and Fact modeling.
+- Data Catalog documentation.
+
+### In Progress
+
+- Expanding data collection sources.
+- Improving data quality and transformations.
+- Developing additional analytical capabilities.
+- Machine Learning model development.
+
+### Planned
+
+- Automated pipeline orchestration using Apache Airflow.
+- Distributed data processing using Apache Spark.
+- Customer analytics and recommendation models.
+- Interactive dashboards and visualization.
+
+---
+
+## 🔮 Future Work
+
+Future development aims to extend TeleScope.ai with:
+
+- Automated end-to-end data pipelines.
+- Advanced customer sentiment analysis.
+- Telecom provider recommendation systems.
+- Offer comparison and recommendation models.
+- Customer satisfaction prediction.
+- Interactive analytics dashboards.
+
+---
+
+## 👨‍💻 Team
+
+TeleScope.ai is developed as a graduation project by a team of students specializing in Data Engineering, Data Science, and Machine Learning.
+
+---
+
+## 📄 License
+
+This project was developed for educational and graduation project purposes.
